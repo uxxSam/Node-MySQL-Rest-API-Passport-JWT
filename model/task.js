@@ -16,15 +16,20 @@ app.get('/', function (req, res) {
 	res.send('<html><body><p>Welcome to the database</p></body></html>');
 });
 
+// EndPoint:
+// https://127.0.0.1:5000/product/api/all?order={orderby}
+app.get('/product/api/all', REST_GET.getAllRecords);
+
+// Endpoint:
+// https://127.0.0.1:5000/product/api/?c={target_column}&q={target_value}&order={orderby}
+app.get('/product/api/', REST_GET.findByColumn);
+
+// EndPoint:
+// https://127.0.0.1:5000/product/api/search/?c={target_column}&start={start}&end={end}&order={orderby}
+app.get('/product/api/search', REST_GET.rangeSearch);
+
 // Endpoint: https://127.0.0.1:5000/product/add
 app.post('/product/add', REST_POST);
-
-// Endpoint: https://127.0.0.1:5000/product/{:column name}?q={column value}
-app.get('/product/:column', REST_GET.findByColumn);
-
-// EndPoint: https://1270.0.0.1:5000/product/
-app.get('/product/', REST_GET.getAllRecords);
-
 
 // Endpoint: https://127.0.0.1:5000/product/edit/{:product id}
 app.post('/product/edit/:id', REST_EDIT);
