@@ -1,7 +1,10 @@
-module.exports = function (req,res) {
-	var id = req.params.id;
+var connection = require('../model/dbconnection');
 
-	connection.query('DELETE FROM nd_products WHERE id = ?', [id], function(err, result) {
+// product/api/delete/?id={orderID}
+module.exports = function (req,res) {
+	var id = req.query.id;
+
+	connection.query('DELETE FROM saleData WHERE Order_ID = ?', [id], function(err, result) {
   		if (!err){
   			var response = [];
 

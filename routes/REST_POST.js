@@ -1,5 +1,6 @@
 var connection = require('../model/dbconnection');
 
+// product/api/add/?content={}
 module.exports = function (req,res) {
 	var response = [];
 

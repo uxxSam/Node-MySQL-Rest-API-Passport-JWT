@@ -16,27 +16,27 @@ app.get('/', function (req, res) {
 	res.send('<html><body><p>Welcome to the database</p></body></html>');
 });
 
-// EndPoint:
+// GET, EndPoint:
 // https://127.0.0.1:5000/product/api/all?order={orderby}
 app.get('/product/api/get/all', REST_GET.getAllRecords);
 
-// Endpoint:
+// GET, Endpoint:
 // https://127.0.0.1:5000/product/api/?c={target_column}&q={target_value}&order={orderby}
 app.get('/product/api/get', REST_GET.findByColumn);
 
-// EndPoint:
+// GET, EndPoint:
 // https://127.0.0.1:5000/product/api/search/?c={target_column}&start={start}&end={end}&order={orderby}
 app.get('/product/api/get/search', REST_GET.rangeSearch);
 
-// Endpoint:
+// POST, Endpoint:
 // https://127.0.0.1:5000/product/api/add/?content={}
 app.post('/product/api/add', REST_POST);
 
-// Endpoint:
+// EDIT, Endpoint:
 // https://127.0.0.1:5000/product/api/edit/:orderID/?content={}
 app.post('/product/api/edit/:id', REST_EDIT);
 
-// Endpoint: https://127.0.0.1:5000/product/delete/{:product id}
-app.delete('/product/delete/:id', REST_DELETE);
+// Endpoint: https://127.0.0.1:5000/product/api/delete/?id={orderID}
+app.delete('/product/api/delete/', REST_DELETE);
 
 module.exports = app;
