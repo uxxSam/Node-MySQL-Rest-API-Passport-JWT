@@ -18,21 +18,23 @@ app.get('/', function (req, res) {
 
 // EndPoint:
 // https://127.0.0.1:5000/product/api/all?order={orderby}
-app.get('/product/api/all', REST_GET.getAllRecords);
+app.get('/product/api/get/all', REST_GET.getAllRecords);
 
 // Endpoint:
 // https://127.0.0.1:5000/product/api/?c={target_column}&q={target_value}&order={orderby}
-app.get('/product/api/', REST_GET.findByColumn);
+app.get('/product/api/get', REST_GET.findByColumn);
 
 // EndPoint:
 // https://127.0.0.1:5000/product/api/search/?c={target_column}&start={start}&end={end}&order={orderby}
-app.get('/product/api/search', REST_GET.rangeSearch);
+app.get('/product/api/get/search', REST_GET.rangeSearch);
 
-// Endpoint: https://127.0.0.1:5000/product/add
-app.post('/product/add', REST_POST);
+// Endpoint:
+// https://127.0.0.1:5000/product/api/add/?content={}
+app.post('/product/api/add', REST_POST);
 
-// Endpoint: https://127.0.0.1:5000/product/edit/{:product id}
-app.post('/product/edit/:id', REST_EDIT);
+// Endpoint:
+// https://127.0.0.1:5000/product/api/edit/:orderID/?content={}
+app.post('/product/api/edit/:id', REST_EDIT);
 
 // Endpoint: https://127.0.0.1:5000/product/delete/{:product id}
 app.delete('/product/delete/:id', REST_DELETE);
