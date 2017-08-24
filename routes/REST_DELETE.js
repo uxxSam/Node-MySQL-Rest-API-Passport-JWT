@@ -2,6 +2,7 @@ var connection = require('../model/dbconnection');
 
 // product/api/delete/?id={orderID}
 module.exports = function (req,res) {
+	// Delete by order id
 	var id = req.query.id;
 
 	connection.query('DELETE FROM saleData WHERE Order_ID = ?', [id], function(err, result) {
