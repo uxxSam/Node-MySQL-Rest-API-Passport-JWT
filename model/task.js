@@ -30,7 +30,11 @@ app.get('/product/api/get/search', REST_GET.rangeSearch);
 
 // POST, Endpoint:
 // https://127.0.0.1:5000/product/api/add/?content={}
-app.post('/product/api/add', REST_POST);
+app.post('/product/api/add', REST_POST.addOne);
+
+// POST, Endpoint:
+// https://127.0.0.1:5000/product/api/add/?content={}
+app.post('/product/api/add/batch/', REST_POST.addBatch);
 
 // EDIT, Endpoint:
 // https://127.0.0.1:5000/product/api/edit/:orderID/?content={}
