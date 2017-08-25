@@ -29,11 +29,11 @@ app.get('/product/api/get', REST_GET.findByColumn);
 app.get('/product/api/get/search', REST_GET.rangeSearch);
 
 // POST, Endpoint:
-// https://127.0.0.1:5000/product/api/add/?content={}
+// https://127.0.0.1:5000/product/api/add/?content=1,2,3...
 app.post('/product/api/add', REST_POST.addOne);
 
 // POST, Endpoint:
-// https://127.0.0.1:5000/product/api/add/?content={}
+// https://127.0.0.1:5000/product/api/add/?content[0]=1,2,3,...&content[1]=1,2,3...
 app.post('/product/api/add/batch/', REST_POST.addBatch);
 
 // EDIT, Endpoint:
