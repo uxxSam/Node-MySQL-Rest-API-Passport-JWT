@@ -14,7 +14,30 @@ exports.findByColumn = function (req,res) {
 		var order = req.query.order;
 	}
 
-	connection.query('SELECT * from saleData where ?? = ? ORDER BY ?? DESC', [ column, val, order ], function(err, rows, fields) {
+	// get value of limit
+	if (typeof req.query.limit == 'undefined')
+	{
+		var limit = 100;
+	} else {
+		var limit = parseInt(req.query.limit);
+	}
+
+	if (limit > 500 || limit < 1) {
+		limit = 100;
+	}
+
+	// get offset value from requested page
+	if (typeof req.query.page == 'undefined')
+	{
+		var page = 1;
+	} else {
+		var page = parseInt(req.query.page);
+	}
+
+	var offset = limit * (page - 1);
+
+	connection.query('SELECT * from saleData where ?? = ? ORDER BY ?? DESC LIMIT ? OFFSET ?',
+	[ column, val, order, limit, offset ], function(err, rows, fields) {
   		if (!err){
   			var response = [];
 
@@ -45,7 +68,30 @@ exports.getAllRecords = function (req,res) {
 		var order = req.query.order;
 	}
 
-	connection.query('SELECT * from saleData ORDER BY ?? DESC', [ order ], function(err, rows, fields) {
+	// get value of limit
+	if (typeof req.query.limit == 'undefined')
+	{
+		var limit = 100;
+	} else {
+		var limit = parseInt(req.query.limit);
+	}
+
+	if (limit > 500 || limit < 1) {
+		limit = 100;
+	}
+
+	// get offset value from requested page
+	if (typeof req.query.page == 'undefined')
+	{
+		var page = 1;
+	} else {
+		var page = parseInt(req.query.page);
+	}
+
+	var offset = limit * (page - 1);
+
+	connection.query('SELECT * from saleData ORDER BY ?? DESC LIMIT ? OFFSET ?',
+	[ order, limit, page ], function(err, rows, fields) {
   		if (!err){
   			var response = [];
 
@@ -78,8 +124,30 @@ exports.rangeSearch = function (req,res) {
 		var order = req.query.order;
 	}
 
-	connection.query('SELECT * from saleData WHERE ?? > ? AND ?? < ? ORDER BY ?? DESC',
-	[ column, startVal, column, endVal, order ], function(err, rows, fields) {
+	// get value of limit
+	if (typeof req.query.limit == 'undefined')
+	{
+		var limit = 100;
+	} else {
+		var limit = parseInt(req.query.limit);
+	}
+
+	if (limit > 500 || limit < 1) {
+		limit = 100;
+	}
+
+	// get offset value from requested page
+	if (typeof req.query.page == 'undefined')
+	{
+		var page = 1;
+	} else {
+		var page = parseInt(req.query.page);
+	}
+
+	var offset = limit * (page - 1);
+
+	connection.query('SELECT * from saleData WHERE ?? > ? AND ?? < ? ORDER BY ?? DESC LIMIT ? OFFSET ?',
+	[ column, startVal, column, endVal, order, limit, offset ], function(err, rows, fields) {
   		if (!err){
   			var response = [];
 
