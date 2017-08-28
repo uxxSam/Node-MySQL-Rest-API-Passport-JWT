@@ -1,9 +1,69 @@
 module.exports = function(app, passport) {
 
-	// authenticate the login information
-	app.post('/login', passport.authenticate('local-login',
-  { session: false }), serialize, generateToken, respond);
-  // if authenticate passes, respond with access token
+// =========== authenticate login info and generate access token ===============
+
+  app.post('/login', function(req, res, next) {
+  passport.authenticate('local-login', function(err, user, info) {
+      if (err) { return next(err); }
+      // stop if it fails
+      if (!user) { return res.json({ message: 'Invalid Username of Password' }); }
+
+      req.logIn(user, function(err) {
+        // return if does not match
+        if (err) { return next(err); }
+
+        // generate token if it succeeds
+        const db = {
+          updateOrCreate: function(user, cb){
+            cb(null, user);
+          }
+        };
+        db.updateOrCreate(req.user, function(err, user){
+          if(err) {return next(err);}
+          // store the updated information in req.user again
+          req.user = {
+            id: user.username
+          };
+        });
+
+        // create token
+        const jwt = require('jsonwebtoken');
+        req.token = jwt.sign({
+          id: req.user.id,
+        }, 'vidyapathaisalwaysrunning', {
+          expiresIn: 120
+        });
+
+        // lastly respond with json
+        return res.status(200).json({
+          user: req.user,
+          token: req.token
+        });
+      });
+    })(req, res, next);
+  });
+
+// =============================================================================
+
+// ==================== Allows users to create accounts ========================
+
+  app.post('/signup', passport.authenticate('local-signup', {
+    successRedirect : '/signup/successjson',
+    failureRedirect : '/signup/failurejson',
+    failureFlash : true
+    }));
+  // return messages for signup users
+  app.get('/signup/successjson', function(req, res) {
+    res.json({ message: 'Successfully created user' });
+  });
+
+  app.get('/signup/failurejson', function(req, res) {
+    res.json({ message: 'This user already exists' });
+  });
+
+// =============================================================================
+
+// if authenticate passes, respond with access token
 
   const expressJwt = require('express-jwt');
   const authenticate = expressJwt({secret : 'vidyapathaisalwaysrunning'});
@@ -12,59 +72,4 @@ module.exports = function(app, passport) {
     res.status(200).json(req.user);
   });
 
-	// =====================================
-	// SIGNUP ==============================
-	// =====================================
-	// show the signup form
-	app.get('/signup', function(req, res) {
-		// render the page and pass in any flash data if it exists
-		res.render('signup.ejs', { message: req.flash('signupMessage') });
-	});
-
-	// process the signup form
-	app.post('/signup', passport.authenticate('local-signup', {
-		successRedirect : '/profile', // redirect to the secure profile section
-		failureRedirect : '/signup', // redirect back to the signup page if there is an error
-		failureFlash : true // allow flash messages
-	}));
-}
-
-// =====================================
-// Functions ===========================
-// =====================================
-
-function serialize(req, res, next) {
-  db.updateOrCreate(req.user, function(err, user){
-    if(err) {return next(err);}
-    // we store the updated information in req.user again
-    req.user = {
-      id: user.username
-    };
-    next();
-  });
-}
-
-const db = {
-  updateOrCreate: function(user, cb){
-    // db dummy, we just cb the user
-    cb(null, user);
-  }
-};
-
-const jwt = require('jsonwebtoken');
-
-function generateToken(req, res, next) {
-  req.token = jwt.sign({
-    id: req.user.id,
-  }, 'vidyapathaisalwaysrunning', {
-    expiresIn: 120
-  });
-  next();
-}
-
-function respond(req, res) {
-  res.status(200).json({
-    user: req.user,
-    token: req.token
-  });
 }
