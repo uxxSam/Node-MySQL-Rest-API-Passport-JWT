@@ -1,39 +1,16 @@
-// app/routes.js
 module.exports = function(app, passport) {
 
-	// =====================================
-	// HOME PAGE (with login links) ========
-	// =====================================
-	app.get('/', function(req, res) {
-		res.render('index.ejs'); // load the index.ejs file
-	});
+	// authenticate the login information
+	app.post('/login', passport.authenticate('local-login',
+  { session: false }), serialize, generateToken, respond);
+  // if authenticate passes, respond with access token
 
-	// =====================================
-	// LOGIN ===============================
-	// =====================================
-	// show the login form
-	app.get('/login', function(req, res) {
+  const expressJwt = require('express-jwt');
+  const authenticate = expressJwt({secret : 'vidyapathaisalwaysrunning'});
 
-		// render the page and pass in any flash data if it exists
-		res.render('login.ejs', { message: req.flash('loginMessage') });
-	});
-
-	// process the login form
-	app.post('/login', passport.authenticate('local-login', {
-            successRedirect : '/profile', // redirect to the secure profile section
-            failureRedirect : '/login', // redirect back to the signup page if there is an error
-            failureFlash : true // allow flash messages
-		}),
-        function(req, res) {
-            console.log("hello");
-
-            if (req.body.remember) {
-              req.session.cookie.maxAge = 1000 * 60 * 3;
-            } else {
-              req.session.cookie.expires = false;
-            }
-        res.redirect('/');
-    });
+  app.get('/me', authenticate, function(req, res) {
+    res.status(200).json(req.user);
+  });
 
 	// =====================================
 	// SIGNUP ==============================
@@ -50,34 +27,44 @@ module.exports = function(app, passport) {
 		failureRedirect : '/signup', // redirect back to the signup page if there is an error
 		failureFlash : true // allow flash messages
 	}));
+}
 
-	// =====================================
-	// PROFILE SECTION =========================
-	// =====================================
-	// we will want this protected so you have to be logged in to visit
-	// we will use route middleware to verify this (the isLoggedIn function)
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user // get the user out of session and pass to template
-		});
-	});
+// =====================================
+// Functions ===========================
+// =====================================
 
-	// =====================================
-	// LOGOUT ==============================
-	// =====================================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
-	});
+function serialize(req, res, next) {
+  db.updateOrCreate(req.user, function(err, user){
+    if(err) {return next(err);}
+    // we store the updated information in req.user again
+    req.user = {
+      id: user.username
+    };
+    next();
+  });
+}
+
+const db = {
+  updateOrCreate: function(user, cb){
+    // db dummy, we just cb the user
+    cb(null, user);
+  }
 };
 
-// route middleware to make sure
-function isLoggedIn(req, res, next) {
+const jwt = require('jsonwebtoken');
 
-	// if user is authenticated in the session, carry on
-	if (req.isAuthenticated())
-		return next();
+function generateToken(req, res, next) {
+  req.token = jwt.sign({
+    id: req.user.id,
+  }, 'vidyapathaisalwaysrunning', {
+    expiresIn: 120
+  });
+  next();
+}
 
-	// if they aren't redirect them to the home page
-	res.redirect('/');
+function respond(req, res) {
+  res.status(200).json({
+    user: req.user,
+    token: req.token
+  });
 }

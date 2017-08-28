@@ -47,7 +47,7 @@ exports.findByColumn = function (req,res) {
 				response.push({'result' : 'error', 'msg' : 'No Results Found'});
 			}
 
-			res.setHeader('Content-Type', 'application/json');
+				res.setHeader('Content-Type', 'application/json');
 	    	res.status(200).send(JSON.stringify(response));
   		} else {
 		    res.status(400).send(err);
