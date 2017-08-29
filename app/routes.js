@@ -1,4 +1,9 @@
-module.exports = function(app, passport) {
+module.exports = function(app, passport, SERVER_SECRET) {
+
+  // default message
+  app.get('/', function (req, res) {
+    res.send('<html><body><p>Welcome to the database</p></body></html>');
+  });
 
 // =========== authenticate login info and generate access token ===============
 
@@ -30,7 +35,7 @@ module.exports = function(app, passport) {
         const jwt = require('jsonwebtoken');
         req.token = jwt.sign({
           id: req.user.id,
-        }, 'vidyapathaisalwaysrunning', {
+        }, SERVER_SECRET, {
           expiresIn: 120
         });
 
@@ -63,13 +68,45 @@ module.exports = function(app, passport) {
 
 // =============================================================================
 
-// if authenticate passes, respond with access token
+// ================= Protected APIs for authenticated Users ====================
 
-  const expressJwt = require('express-jwt');
-  const authenticate = expressJwt({secret : 'vidyapathaisalwaysrunning'});
+  // get tools and routes
+  var expressJwt = require('express-jwt'),
+      REST_POST = require('../routes/REST_POST'),
+      REST_GET = require('../routes/REST_GET'),
+      REST_EDIT = require('../routes/REST_EDIT'),
+      REST_DELETE = require('../routes/REST_DELETE');
 
-  app.get('/me', authenticate, function(req, res) {
-    res.status(200).json(req.user);
-  });
+  // authenticate access token
+  const authenticate = expressJwt({secret : SERVER_SECRET});
+
+  // GET, EndPoint:
+  // https://127.0.0.1:5000/product/api/all?order={orderby}
+  app.get('/product/api/get/all', authenticate, REST_GET.getAllRecords);
+
+  // GET, Endpoint:
+  // https://127.0.0.1:5000/product/api/?c={target_column}&q={target_value}&order={orderby}
+  app.get('/product/api/get', authenticate, REST_GET.findByColumn);
+
+  // GET, EndPoint:
+  // https://127.0.0.1:5000/product/api/search/?c={target_column}&start={start}&end={end}&order={orderby}
+  app.get('/product/api/get/search', authenticate, REST_GET.rangeSearch);
+
+  // POST, Endpoint:
+  // https://127.0.0.1:5000/product/api/add/?content=1,2,3...
+  app.post('/product/api/add', authenticate, REST_POST.addOne);
+
+  // POST, Endpoint:
+  // https://127.0.0.1:5000/product/api/add/?content[0]=1,2,3,...&content[1]=1,2,3...
+  app.post('/product/api/add/batch/', authenticate, REST_POST.addBatch);
+
+  // EDIT, Endpoint:
+  // https://127.0.0.1:5000/product/api/edit/:orderID/?content={}
+  app.post('/product/api/edit/:id', authenticate, REST_EDIT);
+
+  // Endpoint: https://127.0.0.1:5000/product/api/delete/?id={orderID}
+  app.delete('/product/api/delete/', authenticate, REST_DELETE);
+
+// =============================================================================
 
 }

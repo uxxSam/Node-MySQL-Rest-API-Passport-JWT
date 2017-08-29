@@ -1,8 +1,7 @@
-var connection = require('../model/dbconnection');
-
 // Given a certain column and target value, get records
 // product/api/get/?c={target_column}&q={target_value}&order={orderby}
 exports.findByColumn = function (req,res) {
+	var connection = require('../model/dbconnection');
 	var column = req.query.c;
 	var val = req.query.q;
 
@@ -58,6 +57,7 @@ exports.findByColumn = function (req,res) {
 // Get all records
 // product/api/get/all?order={orderby}
 exports.getAllRecords = function (req,res) {
+	var connection = require('../model/dbconnection');
 	var val = req.query.q;
 
 	// If order not speficied, then use order date
@@ -112,6 +112,7 @@ exports.getAllRecords = function (req,res) {
 // Given a certain column and a range of values, get records in range
 // product/api/get/search/?c={target_column}&s={start}&e={end}&order={orderby}
 exports.rangeSearch = function (req,res) {
+	var connection = require('../model/dbconnection');
 	var column = req.query.c;
 	var startVal = req.query.s;
 	var endVal = req.query.e;

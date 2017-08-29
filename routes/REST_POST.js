@@ -1,7 +1,6 @@
-var connection = require('../model/dbconnection');
-
 // product/api/add/?content=1,2,3,...
 exports.addOne = function (req,res) {
+	var connection = require('../model/dbconnection');
 	var response = [];
 
 	// split content in the url to arrays
@@ -64,6 +63,7 @@ exports.addOne = function (req,res) {
 
 // product/api/add/batch/?content[0]=1,2,3,...& content[1]=1,2,3...
 exports.addBatch = function (req,res) {
+	var connection = require('../model/dbconnection');
 	var response = [];
 
 	// make sure all required fields are provided

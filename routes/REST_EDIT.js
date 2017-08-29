@@ -1,7 +1,6 @@
-var connection = require('../model/dbconnection');
-
 // product/api/edit/:orderID/?content={}
 module.exports = function (req,res) {
+	var connection = require('../model/dbconnection');
 	var response = [];
 
 	// split content in the url to arrays

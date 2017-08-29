@@ -1,7 +1,6 @@
-var connection = require('../model/dbconnection');
-
 // product/api/delete/?id={orderID}
 module.exports = function (req,res) {
+	var connection = require('../model/dbconnection');
 	// Delete by order id
 	var id = req.query.id;
 

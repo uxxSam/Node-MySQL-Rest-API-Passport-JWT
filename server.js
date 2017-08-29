@@ -39,8 +39,10 @@ var options = {
   cert: fs.readFileSync('certificate.crt')
 };
 
+const SERVER_SECRET = 'ohgodpleasenobug';
+
 // routes
-require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+require('./app/routes.js')(app, passport, SERVER_SECRET); // load our routes and pass in our app and fully configured passport
 
 // Create server
 https.createServer(options, app).listen(port, function(){
